@@ -47,7 +47,7 @@ export default SettingsTab = () => {
     }, []);
 
     const openRepo = () => {
-        const url = "https://github.com/kvnp/youtune-reactnative";
+        const url = "https://github.com/owencz1998/youtune-reactnative";
         if (Platform.OS == "web")
             window.open(url, "_blank");
         else
