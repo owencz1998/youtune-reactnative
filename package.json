@@ -48,7 +48,7 @@
         "react-native-tab-view": "^3.5.2",
         "react-native-track-player": "github:kvnp/react-native-track-player",
         "react-native-vector-icons": "^9.2.0",
-        "react-native-web": "^0.18.7",
+        "react-native-web": "^0.19.9",
         "react-native-web-linear-gradient": "^1.1.2",
         "react-native-windows": "0.68.0",
         "rn-sliding-up-panel": "^2.4.5"
