@@ -77,7 +77,7 @@
         "react-test-renderer": "^18.2.0",
         "run-script-os": "^1.1.6",
         "webpack": "^5.74.0",
-        "webpack-cli": "^4.10.0",
+        "webpack-cli": "^5.1.4",
         "webpack-dev-server": "^4.9.3",
         "webpack-pwa-manifest": "^4.0.0",
         "workbox-webpack-plugin": "^6.5.4"
