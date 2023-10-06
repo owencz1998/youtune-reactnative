@@ -1,33 +1,88 @@
 import { Application } from 'https://deno.land/x/oak@v11.1.0/mod.ts';  
   
-  const app = new Application();  
+  server { 
+         server_name your_domain.local; 
   
-  // Send static content  
-  app.use(async (ctx, next) => {  
-      try {  
-          await ctx.send({  
-              root: `${Deno.cwd()}/youtune;`,  
-              index: 'index.html',  
-          });  
-      } catch {  
-          await next();  
-      }  
-  });  
+         root /path/to/youtune; 
+         index index.html; 
+         add_header Access-Control-Allow-Origin *; 
   
-  // 404 handler (redirect to index.html)  
-  app.use((ctx) => {  
-      // handle index.html not found  
-      if (  
-          ctx.request.url.pathname === '/' ||  
-          ctx.request.url.pathname ==='/ index.html'  
-      ) {  
-          ctx.response.status = 404;  
-          ctx.response.body = 'Not found.\nSeems index.html is missing.';  
-          return;  
-      }  
-      ctx.response.status = 301;  
-      ctx.response.redirect('/');  
-  });  
+         ssl_certificate /path/to/fullchain.pem; 
+         ssl_certificate_key /path/to/key.pem; 
+         ssl_trusted_certificate /path/to/ca.pem; 
   
-  console.log('App listening on port', 3000);  
-  await app.listen({ port: 3000 });
+         include common_ssl.conf; 
+  
+         access_log off; 
+         error_log off; 
+  
+         location / { 
+                 try_files $uri /index.html; 
+         } 
+  
+         location /watch { 
+                 proxy_pass http://localhost:3000; 
+         } 
+  
+         location /playlist { 
+                 proxy_pass http://localhost:3000; 
+         } 
+  
+         location /proxy/ { 
+                 rewrite ^/proxy(/.*)$ $1 break; 
+                 proxy_buffering off; 
+                 proxy_set_header Referer "https://music.youtube.com/"; 
+                 proxy_set_header Origin "https://music.youtube.com/"; 
+                 proxy_set_header User-Agent "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0"; 
+                 proxy_pass https://music.youtube.com; 
+         } 
+  
+         location /proxy/lh3 { 
+                 rewrite ^/proxy/lh3(/.*)$ $1 break; 
+                 proxy_buffering off; 
+                 proxy_set_header Referer "https://music.youtube.com/"; 
+                 proxy_set_header Origin "https://music.youtube.com/"; 
+                 proxy_set_header User-Agent "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0"; 
+                 proxy_pass https://lh3.googleusercontent.com; 
+         } 
+  
+         location /proxy/vi { 
+                 rewrite ^/proxy(/.*)$ $1 break; 
+                 proxy_buffering off; 
+                 proxy_set_header Referer "https://music.youtube.com/"; 
+                 proxy_set_header Origin "https://music.youtube.com/"; 
+                 proxy_set_header User-Agent "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0"; 
+                 proxy_pass https://i.ytimg.com; 
+         } 
+  
+         location /proxy/get_video_info { 
+                 rewrite ^/proxy(/.*)$ $1 break; 
+                 proxy_buffering off; 
+                 proxy_set_header Referer "https://www.youtube.com/"; 
+                 proxy_set_header Origin "https://www.youtube.com/"; 
+                 proxy_set_header User-Agent "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0"; 
+                 proxy_pass https://www.youtube.com; 
+         } 
+  
+         location /proxy/videoplayback { 
+                 rewrite ^/proxy(/.*)$ $1 break; 
+                 proxy_buffering off; 
+                 proxy_set_header Referer "https://www.youtube.com/"; 
+                 proxy_set_header Origin "https://www.youtube.com/"; 
+                 proxy_set_header User-Agent "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0"; 
+                 proxy_pass https://redirector.googlevideo.com; 
+  
+                 proxy_intercept_errors on; 
+                 error_page 301 302 307 = @handle_redirects; 
+         } 
+  
+         location @handle_redirects { 
+                 resolver 8.8.8.8; 
+                 proxy_intercept_errors on; 
+                 recursive_error_pages on; 
+                 error_page 301 302 307 = @handle_redirects; 
+  
+                 set $redirection_url $upstream_http_location; 
+                 proxy_pass $redirection_url; 
+         } 
+ }
