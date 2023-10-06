@@ -7,19 +7,19 @@ import { Application } from 'https://deno.land/x/oak@v11.1.0/mod.ts';
       try {  
           await ctx.send({  
               root: `${Deno.cwd()}/`,  
-              index: 'index.html',  
+              index: 'index.js',  
           });  
       } catch {  
           await next();  
       }  
   });  
   
-  // 404 handler (redirect to index.html)  
+  // 404 handler (redirect to index.js)  
   app.use((ctx) => {  
-      // handle index.html not found  
+      // handle index.js not found  
       if (  
           ctx.request.url.pathname === '/' ||  
-          ctx.request.url.pathname ==='/ index.html'  
+          ctx.request.url.pathname ==='/ index.js'  
       ) {  
           ctx.response.status = 404;  
           ctx.response.body = 'Not found.\nSeems index.html is missing.';  
