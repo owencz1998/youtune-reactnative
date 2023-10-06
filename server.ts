@@ -7,7 +7,7 @@ import { Application } from 'https://deno.land/x/oak@v11.1.0/mod.ts';
       try {  
           await ctx.send({  
               root: `${Deno.cwd()}/`,  
-              index: 'index.html',  
+              index: 'index.js',  
           });  
       } catch {  
           await next();  
